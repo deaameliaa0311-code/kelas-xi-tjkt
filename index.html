@@ -1,0 +1,165 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seberapa Kenal Kamu Sama Dea? 🎀</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;padding:20px;
+ font-family:'Trebuchet MS',sans-serif;
+ background:linear-gradient(135deg,#ffe0f0,#eadcff,#fff0f7);
+ color:#853d75;text-align:center;
+}
+.card{
+ max-width:600px;margin:25px auto;padding:25px;
+ background:#ffffffdf;border:3px solid #ffc4e2;
+ border-radius:28px;box-shadow:0 8px 25px #d99ac755;
+}
+h1{color:#e65ca5;font-size:27px}
+h2{font-size:21px}
+p{line-height:1.6}
+button{
+ border:0;border-radius:15px;padding:12px 18px;
+ background:#ee82bd;color:white;font-weight:bold;
+ font-size:15px;cursor:pointer;margin:5px;
+}
+button:hover{background:#c46bdd}
+.option{
+ display:block;width:100%;text-align:left;
+ background:#fff0f8;color:#914b80;
+ border:2px solid #ffc4e2;margin:10px 0;
+}
+.option.selected{background:#e8d4ff;border-color:#b87be8}
+#quiz,#result{display:none}
+.progress{background:#f8d5ea;border-radius:20px;height:10px}
+#bar{background:#df75b7;width:0%;height:10px;border-radius:20px}
+.small{font-size:13px;color:#b46a9d}
+</style>
+</head>
+<body>
+
+<div class="card" id="home">
+<h1>🎀 Seberapa Kenal Kamu Sama Dea? 🎀</h1>
+<p>Hai bestiee! 💗 Yuk, buktikan seberapa kenal kamu sama Dea!</p>
+<p>Jawab 25 pertanyaan dengan jujur yaa ✨</p>
+<p>૮ ˶ᵔ ᵕ ᵔ˶ ა ♡</p>
+<button onclick="startQuiz()">Mulai Kuis 💕</button>
+</div>
+
+<div class="card" id="quiz">
+<p id="number"></p>
+<div class="progress"><div id="bar"></div></div>
+<h2 id="question"></h2>
+<div id="options"></div>
+<button onclick="previousQuestion()">⬅️ Kembali</button>
+<button onclick="nextQuestion()" id="next">Lanjut ➡️</button>
+<p class="small">Pilih satu jawaban sebelum lanjut yaa 🎀</p>
+</div>
+
+<div class="card" id="result">
+<h1>Hasil Kuis Dea 💗</h1>
+<p>Skor kamu:</p>
+<h1 id="score"></h1>
+<h2 id="grade"></h2>
+<p id="message"></p>
+<p>Terima kasih sudah ikut kuisnya! 🎀</p>
+<button onclick="restartQuiz()">Ulangi Kuis 🔄</button>
+</div>
+
+<script>
+const questions = [
+["Apa yang paling bikin Dea kecewa?",["Kehabisan kuota","Janji yang nggak ditepatin","Cuaca mendung","Bangun kesiangan"],1],
+["Kalau punya waktu luang, Dea suka?",["Jalan-jalan","Nonton film","Tidur","Belanja"],2],
+["Saat sedih, Dea biasanya?",["Menyendiri","Pergi ke mal","Bermain game","Makan bersama teman"],0],
+["Dea paling nggak suka dianggap?",["Pemalu","Pendiam","Sombong","Lucu"],2],
+["Apa yang bikin Dea sedih?",["Dikasih hadiah","Didiemin","Diajak jalan","Dipuji"],1],
+["Kalau kecewa, Dea cenderung?",["Langsung tertawa","Marah ke semua orang","Menjauh","Pura-pura lupa"],2],
+["Dea paling nggak suka teman yang?",["Terlalu ramai","Suka bercanda","Jarang online","Bermuka dua"],3],
+["Menurut Dea, sifat yang baik adalah?",["Rajin","Suka terlambat","Sering lupa","Suka berdebat"],0],
+["Dea biasanya cerita ke orang lain?",["Kalau ingin membeli sesuatu","Cerita lucu","Kalau ada masalah","Rencana liburan"],2],
+["Kalau lagi capek, Dea memilih?",["Belajar seharian","Tidur","Bersih-bersih rumah","Pergi ke sekolah"],1],
+["Dea suka kalau diperhatikan dengan?",["Barang mahal saja","Dipuji di depan banyak orang","Banyak cara","Dibiarkan sendiri"],2],
+["Apa yang Dea harapkan dari orang terdekat?",["Selalu dimengerti","Selalu dituruti","Selalu diberi hadiah","Selalu dipuji"],0],
+["Saat sedang marah, Dea biasanya?",["Bicara terus","Diam","Langsung bercanda","Bernyanyi"],1],
+["Apa yang bisa bikin Dea bad mood?",["Cuaca panas","Lagu favorit","Respons yang buruk","Warna pakaian"],2],
+["Dea punya cita-cita menjadi?",["Penyanyi","CEO","Atlet","Koki"],1],
+["Kegiatan yang Dea pilih?",["Berkemah","Menonton film","Belanja","Bermain ponsel"],0],
+["Kalau perasaannya terluka, Dea bisa?",["Langsung tertawa","Menyalahkan semua orang","Menangis","Berbelanja"],2],
+["Hal yang kadang menghambat Dea?",["Terlalu banyak bicara","Rasa malas","Terlalu suka olahraga","Terlalu rajin"],1],
+["Dea paling kepikiran sama?",["Penampilan","Hobi","Omongan","Warna favorit"],2],
+["Dea termasuk orang yang?",["Mudah marah","Mudah nangis","Takut hujan","Suka bangun pagi"],1],
+["Apa warna favorit Dea?",["Biru","Hitam","Pink","Hijau"],2],
+["Minuman yang Dea pilih?",["Kopi","Jus","Teh tawar","Susu"],1],
+["Siapa nama orang yang Dea pilih di kuis ini?",["Akbar Maulana","Rafael","Andi","Rizky"],0],
+["Makanan yang Dea suka?",["Bakso","Seblak","Waffle","Sate"],2],
+["Dea memilih makanan?",["Bakso","Seblak","Waffle","Sate"],2],
+["Menurut Dea, yang paling berharga adalah?",["Hadiah mahal","Popularitas","Penampilan","Keberadaannya"],3]
+];
+
+let current=0;
+let answers=Array(questions.length).fill(-1);
+
+function startQuiz(){
+ document.getElementById("home").style.display="none";
+ document.getElementById("quiz").style.display="block";
+ renderQuestion();
+}
+function renderQuestion(){
+ let q=questions[current];
+ document.getElementById("number").textContent=
+ "Pertanyaan "+(current+1)+" dari "+questions.length;
+ document.getElementById("bar").style.width=
+ ((current+1)/questions.length*100)+"%";
+ document.getElementById("question").textContent=q[0];
+ let html="";
+ q[1].forEach((option,i)=>{
+ html+=`<button class="option ${answers[current]===i?'selected':''}"
+ onclick="choose(${i})">${String.fromCharCode(65+i)}. ${option}</button>`;
+ });
+ document.getElementById("options").innerHTML=html;
+ document.getElementById("next").textContent=
+ current===questions.length-1?"Lihat Hasil 💖":"Lanjut ➡️";
+}
+function choose(i){
+ answers[current]=i;
+ renderQuestion();
+}
+function nextQuestion(){
+ if(answers[current]===-1){
+ alert("Pilih jawaban dulu yaa, bestie! 💗");return;
+ }
+ if(current<questions.length-1){current++;renderQuestion();}
+ else{showResult();}
+}
+function previousQuestion(){
+ if(current>0){current--;renderQuestion();}
+}
+function showResult(){
+ let score=0;
+ answers.forEach((a,i)=>{if(a===questions[i][2])score++;});
+ let percent=Math.round(score/questions.length*100);
+ document.getElementById("quiz").style.display="none";
+ document.getElementById("result").style.display="block";
+ document.getElementById("score").textContent=
+ score+" / "+questions.length+" ("+percent+"%)";
+ let grade,message;
+ if(score>=23){grade="Bestie Soulmate 💞";message="Wihh, kamu kenal Dea banget! Sahabat sejati nih!";}
+ else if(score>=18){grade="Bestie Kesayangan 🎀";message="Kamu cukup dekat sama Dea. Pertahankan yaa!";}
+ else if(score>=12){grade="Lumayan Dekat 💗";message="Lumayan kenal, tapi masih banyak yang perlu diketahui!";}
+ else if(score>=6){grade="Teman Kenal-Kenal 🌷";message="Ayo lebih kenal Dea lagi! Jangan menyerah yaa.";}
+ else{grade="KENAL DEA DARI MANA?! 😭";message="Waduhh, kayaknya kamu harus kenalan lagi sama Dea!";}
+ document.getElementById("grade").textContent=grade;
+ document.getElementById("message").textContent=message;
+}
+function restartQuiz(){
+ current=0;answers=Array(questions.length).fill(-1);
+ document.getElementById("result").style.display="none";
+ document.getElementById("home").style.display="block";
+}
+</script>
+</body>
+  </html>
+  
